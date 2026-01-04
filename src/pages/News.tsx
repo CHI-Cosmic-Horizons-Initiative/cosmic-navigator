@@ -5,8 +5,16 @@ import StarField from '@/components/StarField';
 import galacticGas from '@/assets/galactic-gas.webp';
 import supernovaHand from '@/assets/supernova-hand.jpg';
 import tidalDisruption from '@/assets/tidal-disruption.jpg';
+import stellarisLogo from '@/assets/stellaris-logo.svg';
 
 const newsItems = [
+  {
+    title: 'Cosmic Horizon Initiative Partners with Stellaris EUI',
+    date: 'January 4, 2026',
+    category: 'Partnership',
+    image: stellarisLogo,
+    excerpt: 'We are proud to announce our partnership with Stellaris EUI, a university club dedicated to astronomy and space science. This marks the beginning of a growing network of academic collaborations.'
+  },
   {
     title: 'New Hubble Observations Reveal Galactic Gas Dynamics',
     date: 'January 2, 2026',

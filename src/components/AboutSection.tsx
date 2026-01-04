@@ -1,6 +1,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Sparkles } from 'lucide-react';
+import ziadImage from '@/assets/ziad-mekawy.jpg';
 
 export default function AboutSection() {
   const ref = useRef(null);
@@ -105,16 +106,21 @@ export default function AboutSection() {
                     className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center stellar-border"
                     whileHover={{ scale: 1.1, rotate: 5 }}
                   >
-                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                      <span className="text-xl font-display text-primary">DR</span>
-                    </div>
+                    <img 
+                      src={ziadImage} 
+                      alt="Ziad Mekawy" 
+                      className="w-full h-full object-cover"
+                    />
                   </motion.div>
                   <div>
                     <cite className="text-foreground font-medium not-italic block">
-                      Dr. Research Director
+                      Ziad Mekawy
                     </cite>
-                    <span className="text-sm text-muted-foreground">
-                      Cosmic Horizons Initiative
+                    <span className="text-sm text-muted-foreground block">
+                      Director, Cosmic Horizon Initiative
+                    </span>
+                    <span className="text-xs text-muted-foreground/70">
+                      Undergrad Student Researcher in Quantum Computing, Cosmology & Astrophysics
                     </span>
                   </div>
                 </footer>

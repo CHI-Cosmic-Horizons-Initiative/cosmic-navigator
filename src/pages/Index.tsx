@@ -4,6 +4,7 @@ import AboutSection from '@/components/AboutSection';
 import BigQuestionsSection from '@/components/BigQuestionsSection';
 import ResearchTopicsSection from '@/components/ResearchTopicsSection';
 import DiscoverSection from '@/components/DiscoverSection';
+import PartnersSection from '@/components/PartnersSection';
 import NewsletterSection from '@/components/NewsletterSection';
 import FooterSection from '@/components/FooterSection';
 import StarField from '@/components/StarField';
@@ -11,7 +12,7 @@ import { useEffect } from 'react';
 
 const Index = () => {
   useEffect(() => {
-    document.title = 'Cosmic Horizons Initiative | International Astronomy & Space Science';
+    document.title = 'Cosmic Horizon Initiative | Astronomy & Space Science';
   }, []);
 
   return (
@@ -29,6 +30,7 @@ const Index = () => {
         <BigQuestionsSection />
         <ResearchTopicsSection />
         <DiscoverSection />
+        <PartnersSection />
         <NewsletterSection />
       </main>
 

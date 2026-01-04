@@ -139,38 +139,37 @@ export default function HeroSection() {
         ))}
       </Helmet>
 
-      {/* Fixed dot navigation */}
+      {/* Fixed dot navigation - fully transparent, borderless */}
       <nav
         aria-label="Highlight navigation"
-        className="fixed right-8 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-3 pointer-events-auto"
+        className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-4 pointer-events-auto"
       >
         {heroSlides.map((slide, index) => (
           <motion.button
             key={index}
             type="button"
             onClick={() => scrollToSlide(index)}
-            whileHover={{ scale: 1.25 }}
+            whileHover={{ scale: 1.4 }}
             whileTap={{ scale: 0.92 }}
             className="relative group pointer-events-auto"
             aria-label={`Go to highlight ${index + 1}: ${slide.title}`}
           >
             <span
-              className={`block w-2 h-2 rounded-full transition-all duration-500 ${
-                activeIndex === index ? "bg-primary scale-125" : "bg-foreground/20 hover:bg-foreground/40"
+              className={`block w-2.5 h-2.5 rounded-full transition-all duration-500 ${
+                activeIndex === index 
+                  ? "bg-primary shadow-[0_0_12px_hsl(var(--primary))]" 
+                  : "bg-foreground/30 hover:bg-foreground/60"
               }`}
             />
             {activeIndex === index && (
               <motion.span
                 layoutId="heroSlideIndicator"
-                className="absolute inset-0 rounded-full border border-primary"
+                className="absolute inset-0 rounded-full border border-primary/50"
                 initial={false}
-                animate={{ scale: 2, opacity: 0 }}
+                animate={{ scale: 2.5, opacity: 0 }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               />
             )}
-            <span className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-xs text-foreground/70 bg-background/80 px-2 py-1 rounded pointer-events-none">
-              {index + 1} / {heroSlides.length}
-            </span>
           </motion.button>
         ))}
       </nav>
@@ -187,15 +186,24 @@ export default function HeroSection() {
             <div className="absolute inset-0 bg-background/60 animate-shimmer pointer-events-none z-0" />
           )}
 
+          {/* All images stacked for crossfade effect */}
           <div className="absolute inset-0">
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className="h-full w-full object-cover"
-              loading="eager"
-              decoding="async"
-              fetchPriority={index === 0 ? "high" : "low"}
-            />
+            {heroSlides.map((s, i) => (
+              <motion.img
+                key={i}
+                src={s.image}
+                alt={s.title}
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="eager"
+                decoding="async"
+                initial={{ opacity: 0 }}
+                animate={{ 
+                  opacity: activeIndex === i ? 1 : 0,
+                  scale: activeIndex === i ? 1 : 1.05
+                }}
+                transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
+              />
+            ))}
             <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />

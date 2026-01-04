@@ -17,9 +17,12 @@ export default function Contact() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Open mailto link
+    const mailtoLink = `mailto:chicosmicinitiative@gmail.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(`From: ${formData.name} (${formData.email})\n\n${formData.message}`)}`;
+    window.open(mailtoLink, '_blank');
     toast({
-      title: "Message sent",
-      description: "Thank you for reaching out. We'll respond soon.",
+      title: "Opening email client",
+      description: "Please send the email from your mail application.",
     });
     setFormData({ name: '', email: '', subject: '', message: '' });
   };
@@ -42,9 +45,15 @@ export default function Contact() {
             <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-medium mb-6">
               Contact Us
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-body">
-              Get in touch with the Cosmic Horizons Initiative
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-body mb-4">
+              Get in touch with the Cosmic Horizon Initiative
             </p>
+            <a 
+              href="mailto:chicosmicinitiative@gmail.com" 
+              className="text-primary hover:text-primary/80 transition-colors"
+            >
+              chicosmicinitiative@gmail.com
+            </a>
           </motion.div>
         </section>
 

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Github, Twitter, Linkedin } from 'lucide-react';
+import { ArrowUpRight, Github, Twitter, Linkedin, Facebook } from 'lucide-react';
 
 const footerLinks = {
   research: [
@@ -30,8 +30,8 @@ const footerLinks = {
 };
 
 const socialLinks = [
+  { icon: Facebook, href: 'https://www.facebook.com/CHICOSMIC', label: 'Facebook' },
   { icon: Twitter, href: '#', label: 'Twitter' },
-  { icon: Github, href: '#', label: 'GitHub' },
   { icon: Linkedin, href: '#', label: 'LinkedIn' },
 ];
 
@@ -52,18 +52,20 @@ export default function FooterSection() {
             transition={{ duration: 0.6 }}
           >
             <div className="mb-6">
-              <span className="text-[10px] tracking-[0.3em] text-muted-foreground uppercase block mb-1">
-                Center for
-              </span>
               <span className="font-display text-lg font-semibold text-foreground block">
-                COSMIC HORIZONS
+                COSMIC HORIZON
               </span>
               <span className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase block">
-                International Initiative
+                Initiative
               </span>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-6 font-body">
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4 font-body">
               Advancing humanity's understanding of the universe through collaborative research and discovery.
+            </p>
+            <p className="text-sm text-muted-foreground mb-6 font-body">
+              <a href="mailto:chicosmicinitiative@gmail.com" className="hover:text-primary transition-colors">
+                chicosmicinitiative@gmail.com
+              </a>
             </p>
             
             {/* Social Links */}
