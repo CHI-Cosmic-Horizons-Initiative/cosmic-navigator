@@ -35,8 +35,10 @@ const heroSlides = [
 
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    setIsLoaded(true);
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 8000);
@@ -49,95 +51,180 @@ export default function HeroSection() {
 
   return (
     <section id="home" className="relative h-screen w-full overflow-hidden lg:pl-64">
-      {/* Background Slides */}
+      {/* Background Slides with Enhanced Transitions */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.5 }}
+          initial={{ opacity: 0, scale: 1.15, filter: 'blur(8px)' }}
+          animate={{ opacity: 1, scale: 1.05, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, scale: 1, filter: 'blur(4px)' }}
+          transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
           className="absolute inset-0"
         >
-          <img
+          <motion.img
             src={heroSlides[currentSlide].image}
             alt={heroSlides[currentSlide].title}
             className="w-full h-full object-cover"
+            animate={{ scale: [1.05, 1.1] }}
+            transition={{ duration: 8, ease: 'linear' }}
           />
-          {/* Overlay gradients */}
-          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+          {/* Multi-layer gradients for depth */}
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
         </motion.div>
       </AnimatePresence>
 
-      {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-center px-8 md:px-16 lg:px-20">
-        <AnimatePresence mode="wait">
+      {/* Floating Particles Overlay */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(20)].map((_, i) => (
           <motion.div
-            key={currentSlide}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl"
-          >
-            {/* Slide content */}
-            <div className="border-l-2 border-primary/50 pl-6 md:pl-8">
-              <motion.h1
-                className="font-display text-3xl md:text-5xl lg:text-6xl font-medium text-foreground leading-tight mb-6"
-              >
-                {heroSlides[currentSlide].title}
-              </motion.h1>
-              
-              <motion.p
-                className="text-base md:text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed"
-              >
-                {heroSlides[currentSlide].description}
-              </motion.p>
-
-              <motion.a
-                href={heroSlides[currentSlide].link}
-                className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors group"
-              >
-                <span className="uppercase tracking-widest">Explore</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </motion.a>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* Slide Indicators */}
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col gap-3">
-        {heroSlides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              currentSlide === index
-                ? 'bg-foreground scale-125'
-                : 'bg-foreground/30 hover:bg-foreground/50'
-            }`}
+            key={i}
+            className="absolute w-1 h-1 bg-primary/30 rounded-full"
+            initial={{ 
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              opacity: 0 
+            }}
+            animate={{ 
+              y: [null, -100],
+              opacity: [0, 0.6, 0],
+            }}
+            transition={{
+              duration: 4 + Math.random() * 4,
+              repeat: Infinity,
+              delay: Math.random() * 4,
+              ease: 'linear'
+            }}
           />
         ))}
       </div>
 
-      {/* Scroll indicator */}
+      {/* Content with Cinematic Entrance */}
+      <div className="relative z-10 h-full flex flex-col justify-center px-8 md:px-16 lg:px-20">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlide}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-3xl"
+          >
+            {/* Glass Panel Container */}
+            <motion.div 
+              className="relative"
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 1, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            >
+              {/* Glowing accent line */}
+              <motion.div 
+                className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent"
+                initial={{ scaleY: 0 }}
+                animate={{ scaleY: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                style={{ transformOrigin: 'top' }}
+              />
+              
+              <div className="pl-6 md:pl-8">
+                <motion.h1
+                  initial={{ y: 30, opacity: 0, filter: 'blur(4px)' }}
+                  animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="font-display text-3xl md:text-5xl lg:text-6xl font-medium text-foreground leading-tight mb-6"
+                >
+                  {heroSlides[currentSlide].title}
+                </motion.h1>
+                
+                <motion.p
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className="text-base md:text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed font-body"
+                >
+                  {heroSlides[currentSlide].description}
+                </motion.p>
+
+                <motion.a
+                  href={heroSlides[currentSlide].link}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                  whileHover={{ x: 5 }}
+                  className="inline-flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-colors group glass-panel px-5 py-3"
+                >
+                  <span className="uppercase tracking-widest">Explore</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </motion.a>
+              </div>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Enhanced Slide Indicators */}
+      <div className="absolute right-8 top-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col gap-4">
+        {heroSlides.map((_, index) => (
+          <motion.button
+            key={index}
+            onClick={() => setCurrentSlide(index)}
+            whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
+            className="relative w-3 h-3 rounded-full transition-all duration-500"
+          >
+            <span className={`absolute inset-0 rounded-full transition-all duration-500 ${
+              currentSlide === index
+                ? 'bg-primary scale-100'
+                : 'bg-foreground/20 scale-75 hover:bg-foreground/40'
+            }`} />
+            {currentSlide === index && (
+              <motion.span
+                layoutId="slideIndicator"
+                className="absolute inset-0 rounded-full border border-primary"
+                initial={false}
+                animate={{ scale: 1.5, opacity: 0 }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+            )}
+          </motion.button>
+        ))}
+      </div>
+
+      {/* Scroll indicator with enhanced animation */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2, duration: 1 }}
         className="absolute bottom-8 left-1/2 lg:left-[calc(50%+8rem)] -translate-x-1/2 z-20"
       >
         <motion.button
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
           onClick={scrollToContent}
-          className="p-2"
+          className="flex flex-col items-center gap-2 group"
+          whileHover={{ scale: 1.1 }}
         >
-          <ChevronDown className="w-8 h-8 text-foreground/50 hover:text-foreground transition-colors" />
+          <span className="text-xs text-muted-foreground uppercase tracking-widest group-hover:text-primary transition-colors">
+            Scroll
+          </span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          >
+            <ChevronDown className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
+          </motion.div>
         </motion.button>
       </motion.div>
+
+      {/* Progress bar for slide duration */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-border/20 z-20 lg:left-64">
+        <motion.div
+          key={currentSlide}
+          className="h-full bg-primary/50"
+          initial={{ width: '0%' }}
+          animate={{ width: '100%' }}
+          transition={{ duration: 8, ease: 'linear' }}
+        />
+      </div>
     </section>
   );
 }

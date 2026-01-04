@@ -6,6 +6,7 @@ import ResearchTopicsSection from '@/components/ResearchTopicsSection';
 import DiscoverSection from '@/components/DiscoverSection';
 import NewsletterSection from '@/components/NewsletterSection';
 import FooterSection from '@/components/FooterSection';
+import StarField from '@/components/StarField';
 import { useEffect } from 'react';
 
 const Index = () => {
@@ -15,11 +16,14 @@ const Index = () => {
 
   return (
     <div className="relative min-h-screen bg-background overflow-x-hidden">
+      {/* Persistent 3D Star Field Background */}
+      <StarField className="pointer-events-none" />
+      
       {/* Navigation */}
       <Navigation />
       
       {/* Main Content */}
-      <main className="relative">
+      <main className="relative z-10">
         <HeroSection />
         <AboutSection />
         <BigQuestionsSection />
