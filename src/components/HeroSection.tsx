@@ -69,10 +69,10 @@ function clamp(n: number, min: number, max: number) {
 export default function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
-  // Continuous slide position driven by window scroll
+  // Continuous slide position driven by scroll
   const slideFloat = useMotionValue(0);
 
   useEffect(() => {
@@ -80,24 +80,23 @@ export default function HeroSection() {
 
     const update = () => {
       raf = 0;
-      if (!containerRef.current) return;
+      if (!trackRef.current) return;
 
-      const rect = containerRef.current.getBoundingClientRect();
-      const containerTop = rect.top + window.scrollY;
+      const rect = trackRef.current.getBoundingClientRect();
+      const trackTop = rect.top + window.scrollY;
       const windowHeight = window.innerHeight;
+      const totalHeight = heroSlides.length * windowHeight;
 
-      const scrolledInto = window.scrollY - containerTop;
-      const slide = clamp(scrolledInto / Math.max(1, windowHeight), 0, heroSlides.length - 1);
+      // How far we've scrolled into the track
+      const scrolledInto = window.scrollY - trackTop;
+      // Progress from 0 to (slides - 1)
+      const progress = scrolledInto / windowHeight;
+      const slide = clamp(progress, 0, heroSlides.length - 1);
+      
       slideFloat.set(slide);
 
       const idx = clamp(Math.round(slide), 0, heroSlides.length - 1);
       setActiveIndex((prev) => (prev === idx ? prev : idx));
-
-      // Debug: helps us confirm the scroll math is updating
-      if (import.meta.env.DEV) {
-        // eslint-disable-next-line no-console
-        console.log('[Hero] scrollY', Math.round(window.scrollY), 'slide', slide.toFixed(2), 'idx', idx);
-      }
     };
 
     const onScroll = () => {
@@ -133,15 +132,12 @@ export default function HeroSection() {
     });
   }, []);
 
+  // Scroll to specific slide using anchor segments
   const scrollToSlide = useCallback((index: number) => {
-    if (!containerRef.current) return;
-    const top = containerRef.current.getBoundingClientRect().top + window.scrollY;
-    const targetScroll = top + index * window.innerHeight;
-    if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
-      console.log('[Hero] dot click', index, '->', Math.round(targetScroll));
+    const segment = document.getElementById(`hero-seg-${index}`);
+    if (segment) {
+      segment.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    window.scrollTo({ top: targetScroll, behavior: 'smooth' });
   }, []);
 
   const scrollToNext = useCallback(() => {
@@ -155,9 +151,23 @@ export default function HeroSection() {
   const transitionDuration = reducedMotion ? 0.2 : 0.7;
 
   return (
-    <div ref={containerRef} className="relative" style={{ height: `${heroSlides.length * 100}vh` }}>
-      {/* Sticky visual layer */}
-      <section id="home" className="sticky top-0 h-screen w-full overflow-hidden lg:pl-64">
+    <div ref={trackRef} className="relative">
+      {/* Anchor segments - these create the scroll distance */}
+      {heroSlides.map((_, index) => (
+        <div
+          key={index}
+          id={`hero-seg-${index}`}
+          className="h-screen w-full"
+          aria-hidden="true"
+        />
+      ))}
+
+      {/* Sticky visual layer - pinned over all segments */}
+      <section 
+        id="home" 
+        className="sticky top-0 h-screen w-full overflow-hidden lg:pl-64"
+        style={{ marginTop: `-${heroSlides.length * 100}vh` }}
+      >
         {/* Loading shimmer */}
         {!imagesLoaded && (
           <div className="absolute inset-0 bg-background animate-shimmer z-50" />
@@ -264,7 +274,7 @@ export default function HeroSection() {
         </div>
 
         {/* Slide Indicators */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 z-30 hidden md:flex flex-col gap-3 pointer-events-auto">
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 z-30 hidden md:flex flex-col gap-3">
           {heroSlides.map((slide, index) => (
             <motion.button
               key={index}
@@ -318,7 +328,6 @@ export default function HeroSection() {
           <motion.div className="h-full bg-primary/50" style={{ width: `${((activeIndex + 1) / heroSlides.length) * 100}%` }} transition={{ duration: 0.25 }} />
         </div>
       </section>
-
     </div>
   );
 }
@@ -335,26 +344,27 @@ function SlideImage({ slide, index, slideFloat, reducedMotion }: SlideImageProps
   // Calculate opacity based on distance from current position
   const opacity = useTransform(slideFloat, (value: number) => {
     const distance = Math.abs(value - index);
-    return clamp(1 - distance, 0, 1);
+    // Full opacity when active, fade out as we move away
+    return clamp(1 - distance * 1.2, 0, 1);
   });
 
-  // Scale: active slide is 1.05, others are 1.12
+  // Scale: active slide is 1.0, others scale up slightly
   const scale = useTransform(slideFloat, (value: number) => {
     const distance = Math.abs(value - index);
-    return 1.05 + distance * 0.07;
+    return 1 + distance * 0.05;
   });
 
   // Blur: active slide has no blur, others are blurred based on distance
   const blur = useTransform(slideFloat, (value: number) => {
     if (reducedMotion) return 0;
     const distance = Math.abs(value - index);
-    return distance * 6;
+    return distance * 8;
   });
 
   // Z-index: highest for most visible slide
   const zIndex = useTransform(slideFloat, (value: number) => {
     const distance = Math.abs(value - index);
-    return Math.round((1 - distance) * 10);
+    return 10 + Math.round((1 - distance) * 10);
   });
 
   // Create filter string from blur value
