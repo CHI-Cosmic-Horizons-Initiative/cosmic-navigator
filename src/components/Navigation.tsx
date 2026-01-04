@@ -1,23 +1,24 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Search, ChevronRight } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const navItems = [
-  { label: 'Home', href: '#home' },
-  { label: 'Big Questions', href: '#questions' },
-  { label: 'Research', href: '#research' },
-  { label: 'People', href: '#community' },
-  { label: 'Facilities', href: '#domains' },
-  { label: 'Academics', href: '#programs' },
-  { label: 'About', href: '#about' },
-  { label: 'Resources', href: '#resources' },
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Science', href: '/science' },
+  { label: 'Research', href: '/research' },
+  { label: 'Programs', href: '/programs' },
+  { label: 'Community', href: '/community' },
+  { label: 'Explore', href: '/explore' },
+  { label: 'News', href: '/news' },
 ];
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,16 +29,9 @@ export default function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (href: string) => {
-    if (href === '#home') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      const element = document.querySelector(href);
-      element?.scrollIntoView({ behavior: 'smooth' });
-    }
-    setActiveSection(href.replace('#', ''));
+  useEffect(() => {
     setIsMobileMenuOpen(false);
-  };
+  }, [location.pathname]);
 
   return (
     <>
@@ -58,11 +52,7 @@ export default function Navigation() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <a 
-            href="#" 
-            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="block group"
-          >
+          <Link to="/" className="block group">
             <span className="text-[10px] tracking-[0.3em] text-muted-foreground uppercase block mb-1">
               Center for
             </span>
@@ -75,41 +65,44 @@ export default function Navigation() {
             <span className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase block mt-1">
               International Initiative
             </span>
-          </a>
+          </Link>
         </motion.div>
 
         {/* Navigation Links */}
         <div className="flex-1 py-6 overflow-y-auto">
           {navItems.map((item, index) => {
-            const isActive = activeSection === item.href.replace('#', '');
+            const isActive = location.pathname === item.href;
             return (
-              <motion.button
+              <motion.div
                 key={item.label}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 + index * 0.05 }}
-                onClick={() => scrollToSection(item.href)}
-                className={`relative block w-full text-left px-6 py-2.5 text-sm transition-all ${
-                  isActive 
-                    ? 'text-foreground' 
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="navActiveIndicator"
-                    className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary"
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  />
-                )}
-                <motion.div
-                  className="flex items-center justify-between"
-                  whileHover={{ x: 4 }}
+                <Link
+                  to={item.href}
+                  className={`relative block w-full text-left px-6 py-2.5 text-sm transition-all ${
+                    isActive 
+                      ? 'text-foreground' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 >
-                  {item.label}
-                  <ChevronRight className={`w-3 h-3 transition-opacity ${isActive ? 'opacity-100' : 'opacity-0'}`} />
-                </motion.div>
-              </motion.button>
+                  {isActive && (
+                    <motion.div
+                      layoutId="navActiveIndicator"
+                      className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary"
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                  <motion.div
+                    className="flex items-center justify-between"
+                    whileHover={{ x: 4 }}
+                  >
+                    {item.label}
+                    <ChevronRight className={`w-3 h-3 transition-opacity ${isActive ? 'opacity-100' : 'opacity-0'}`} />
+                  </motion.div>
+                </Link>
+              </motion.div>
             );
           })}
         </div>
@@ -142,18 +135,14 @@ export default function Navigation() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9 }}
         >
-          <motion.button 
-            className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
-            whileHover={{ x: 4 }}
-          >
-            News
-          </motion.button>
-          <motion.button 
-            className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
-            whileHover={{ x: 4 }}
-          >
-            Events
-          </motion.button>
+          <Link to="/contact" className="block">
+            <motion.span 
+              className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
+              whileHover={{ x: 4 }}
+            >
+              Contact
+            </motion.span>
+          </Link>
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -175,19 +164,17 @@ export default function Navigation() {
         }`}
       >
         <div className="flex items-center justify-between px-4 py-4">
-          <motion.a 
-            href="#" 
-            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="flex flex-col"
-            whileHover={{ scale: 1.02 }}
-          >
-            <span className="text-[8px] tracking-[0.2em] text-muted-foreground uppercase">
+          <Link to="/" className="flex flex-col">
+            <motion.span 
+              className="text-[8px] tracking-[0.2em] text-muted-foreground uppercase"
+              whileHover={{ scale: 1.02 }}
+            >
               Center for
-            </span>
+            </motion.span>
             <span className="font-display text-sm font-semibold text-foreground">
               COSMIC HORIZONS
             </span>
-          </motion.a>
+          </Link>
 
           <motion.button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -245,18 +232,34 @@ export default function Navigation() {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
               {navItems.map((item, index) => (
-                <motion.button
+                <motion.div
                   key={item.label}
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 50 }}
                   transition={{ delay: index * 0.05 }}
-                  onClick={() => scrollToSection(item.href)}
+                >
+                  <Link
+                    to={item.href}
+                    className="block w-full text-left px-6 py-4 text-lg text-foreground hover:text-primary hover:bg-muted/20 transition-colors border-b border-border/10"
+                  >
+                    {item.label}
+                  </Link>
+                </motion.div>
+              ))}
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 50 }}
+                transition={{ delay: navItems.length * 0.05 }}
+              >
+                <Link
+                  to="/contact"
                   className="block w-full text-left px-6 py-4 text-lg text-foreground hover:text-primary hover:bg-muted/20 transition-colors border-b border-border/10"
                 >
-                  {item.label}
-                </motion.button>
-              ))}
+                  Contact
+                </Link>
+              </motion.div>
               <motion.div 
                 className="px-6 py-6"
                 initial={{ opacity: 0, y: 20 }}
