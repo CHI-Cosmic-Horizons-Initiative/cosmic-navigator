@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-function Stars({ count = 6000, scrollY = 0 }) {
+function Stars({ count = 2500, scrollY = 0 }) {
   const ref = useRef<THREE.Points>(null);
   
   const [positions, colors] = useMemo(() => {
@@ -66,7 +66,7 @@ function Stars({ count = 6000, scrollY = 0 }) {
 
 function GalaxyCore({ scrollY = 0 }) {
   const ref = useRef<THREE.Points>(null);
-  const count = 12000;
+  const count = 4000;
   
   const [positions, colors] = useMemo(() => {
     const positions = new Float32Array(count * 3);
@@ -118,7 +118,7 @@ function GalaxyCore({ scrollY = 0 }) {
 
 function NebulaCloud({ scrollY = 0 }) {
   const ref = useRef<THREE.Points>(null);
-  const count = 2000;
+  const count = 800;
   
   const [positions, colors] = useMemo(() => {
     const positions = new Float32Array(count * 3);
@@ -166,7 +166,7 @@ function NebulaCloud({ scrollY = 0 }) {
 
 function DustParticles({ scrollY = 0 }) {
   const ref = useRef<THREE.Points>(null);
-  const count = 500;
+  const count = 200;
   
   const positions = useMemo(() => {
     const positions = new Float32Array(count * 3);
@@ -184,12 +184,7 @@ function DustParticles({ scrollY = 0 }) {
   useFrame((state) => {
     if (ref.current) {
       ref.current.rotation.y = state.clock.elapsedTime * 0.005;
-      const positions = ref.current.geometry.attributes.position.array as Float32Array;
-      for (let i = 0; i < count; i++) {
-        const i3 = i * 3;
-        positions[i3 + 1] += Math.sin(state.clock.elapsedTime + i) * 0.001;
-      }
-      ref.current.geometry.attributes.position.needsUpdate = true;
+      ref.current.rotation.x = state.clock.elapsedTime * 0.003;
     }
   });
 
@@ -231,23 +226,52 @@ interface StarFieldProps {
 
 export default function StarField({ className }: StarFieldProps) {
   const [scrollY, setScrollY] = useState(0);
+  const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
+    const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    const isMobile = window.matchMedia?.('(max-width: 768px)')?.matches;
+    if (prefersReduced || isMobile) setDisabled(true);
+  }, []);
+
+  useEffect(() => {
+    if (disabled) return;
+
+    let raf = 0;
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        setScrollY(window.scrollY);
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, [disabled]);
+
+  if (disabled) {
+    return <div className={`fixed inset-0 ${className || ''}`} style={{ zIndex: 0 }} aria-hidden="true" />;
+  }
 
   return (
-    <div className={`fixed inset-0 ${className || ''}`} style={{ zIndex: 0 }}>
+    <div className={`fixed inset-0 ${className || ''}`} style={{ zIndex: 0 }} aria-hidden="true">
       <Canvas
         camera={{ position: [0, 0, 10], fov: 75 }}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: false, alpha: true, powerPreference: 'low-power' }}
         style={{ background: 'transparent' }}
-        dpr={[1, 1.5]}
+        dpr={[1, 1.25]}
+        onCreated={({ gl }) => {
+          const canvas = gl.domElement;
+          const onLost = (e: Event) => {
+            e.preventDefault();
+            setDisabled(true);
+          };
+          canvas.addEventListener('webglcontextlost', onLost as EventListener, { passive: false });
+        }}
       >
         <Scene scrollY={scrollY} />
       </Canvas>
