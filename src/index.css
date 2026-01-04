@@ -505,6 +505,15 @@
     scroll-snap-stop: normal;
   }
 
+  /* Hero scroll track with soft snap */
+  .hero-scroll-track {
+    scroll-snap-type: y proximity;
+  }
+
+  .hero-snap-child {
+    scroll-snap-align: start;
+  }
+
   /* Parallax depth layers */
   .parallax-slow {
     will-change: transform;
