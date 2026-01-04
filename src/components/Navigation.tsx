@@ -35,16 +35,15 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Desktop Sidebar Navigation - Transparent & Borderless */}
+      {/* Desktop Sidebar Navigation - Fully Transparent & Borderless */}
       <motion.nav
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        className={`fixed left-0 top-0 h-full z-50 hidden lg:flex flex-col w-64 backdrop-blur-md transition-colors duration-500 ${
-          isScrolled ? 'bg-background/55' : 'bg-background/20'
+        className={`fixed left-0 top-0 h-full z-50 hidden lg:flex flex-col w-64 transition-all duration-500 ${
+          isScrolled ? 'bg-background/40 backdrop-blur-lg' : 'bg-transparent'
         }`}
       >
-        
         {/* Logo */}
         <motion.div 
           className="p-6"
@@ -57,7 +56,7 @@ export default function Navigation() {
               Center for
             </span>
             <motion.span 
-              className="font-display text-xl font-semibold text-foreground block border border-foreground/20 px-2 py-1 inline-block group-hover:border-primary/50 transition-colors"
+              className="font-display text-xl font-semibold text-foreground block px-2 py-1 inline-block group-hover:text-primary transition-colors"
               whileHover={{ scale: 1.02 }}
             >
               COSMIC HORIZONS
@@ -115,7 +114,7 @@ export default function Navigation() {
           transition={{ delay: 0.8 }}
         >
           <motion.div 
-            className="flex items-center gap-2 px-3 py-2 glass-panel cursor-pointer"
+            className="flex items-center gap-2 px-3 py-2 bg-foreground/5 rounded-md cursor-pointer hover:bg-foreground/10 transition-colors"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -147,7 +146,7 @@ export default function Navigation() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <Button variant="outline" size="sm" className="w-full mt-4 text-xs stellar-border">
+            <Button variant="outline" size="sm" className="w-full mt-4 text-xs bg-primary/10 border-primary/20 hover:bg-primary/20 hover:border-primary/30">
               Support Our Science
             </Button>
           </motion.div>
@@ -160,7 +159,7 @@ export default function Navigation() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
         className={`fixed top-0 left-0 right-0 z-50 lg:hidden transition-all duration-300 ${
-          isScrolled ? 'bg-background/35 backdrop-blur-md' : 'bg-transparent'
+          isScrolled ? 'bg-background/30 backdrop-blur-lg' : 'bg-transparent'
         }`}
       >
         <div className="flex items-center justify-between px-4 py-4">
@@ -218,7 +217,7 @@ export default function Navigation() {
             className="fixed inset-0 z-40 lg:hidden pt-16"
           >
             <motion.div 
-              className="absolute inset-0 bg-background/50 backdrop-blur-md" 
+              className="absolute inset-0 bg-background/40 backdrop-blur-xl" 
               onClick={() => setIsMobileMenuOpen(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -241,7 +240,7 @@ export default function Navigation() {
                 >
                   <Link
                     to={item.href}
-                    className="block w-full text-left px-6 py-4 text-lg text-foreground hover:text-primary hover:bg-muted/20 transition-colors border-b border-border/10"
+                    className="block w-full text-left px-6 py-4 text-lg text-foreground hover:text-primary hover:bg-foreground/5 transition-colors"
                   >
                     {item.label}
                   </Link>
@@ -255,7 +254,7 @@ export default function Navigation() {
               >
                 <Link
                   to="/contact"
-                  className="block w-full text-left px-6 py-4 text-lg text-foreground hover:text-primary hover:bg-muted/20 transition-colors border-b border-border/10"
+                  className="block w-full text-left px-6 py-4 text-lg text-foreground hover:text-primary hover:bg-foreground/5 transition-colors"
                 >
                   Contact
                 </Link>
@@ -266,7 +265,7 @@ export default function Navigation() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <Button variant="outline" className="w-full stellar-border">
+                <Button variant="outline" className="w-full bg-primary/10 border-primary/20 hover:bg-primary/20">
                   Support Our Science
                 </Button>
               </motion.div>
