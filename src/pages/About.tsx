@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import Navigation from '@/components/Navigation';
 import FooterSection from '@/components/FooterSection';
 import StarField from '@/components/StarField';
+import ziadImage from '@/assets/ziad-mekawy.jpg';
 
 export default function About() {
   return (
@@ -91,28 +92,49 @@ export default function About() {
           </div>
         </section>
 
-        {/* Governance */}
+        {/* Leadership */}
         <section className="py-20 px-8 md:px-16">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-4xl mx-auto">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="font-display text-3xl md:text-4xl mb-6 text-foreground"
+              className="font-display text-3xl md:text-4xl mb-12 text-center text-foreground"
             >
-              Governance
+              Leadership
             </motion.h2>
+            
+            {/* Director */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="glass-panel p-8 flex flex-col md:flex-row items-center gap-8 mb-8"
+            >
+              <div className="w-32 h-32 rounded-full overflow-hidden flex-shrink-0 stellar-border">
+                <img 
+                  src={ziadImage} 
+                  alt="Ziad Mekawy" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="text-center md:text-left">
+                <h3 className="font-display text-2xl text-foreground mb-1">Ziad Mekawy</h3>
+                <p className="text-primary text-sm mb-3">Director, Cosmic Horizon Initiative</p>
+                <p className="text-muted-foreground font-body text-sm">
+                  Undergrad Student Researcher in Quantum Computing, Cosmology & Astrophysics
+                </p>
+              </div>
+            </motion.div>
+
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-muted-foreground text-lg font-body mb-8"
+              className="text-center text-muted-foreground/60 text-sm"
             >
-              Our initiative is guided by an international advisory board of leading scientists, educators, and institutional partners.
+              Additional team profiles coming soon.
             </motion.p>
-            <p className="text-sm text-muted-foreground/60">
-              Leadership profiles coming soon.
-            </p>
           </div>
         </section>
 

@@ -77,8 +77,11 @@ export default function Community() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="glass-panel p-5 text-center"
+                  className="glass-panel p-5 text-center relative"
                 >
+                  <span className="absolute top-2 right-2 text-[10px] uppercase tracking-wider text-primary/70 bg-primary/10 px-2 py-0.5 rounded">
+                    Coming Soon
+                  </span>
                   <h3 className="font-display text-lg mb-2 text-foreground">{resource.title}</h3>
                   <p className="text-muted-foreground text-sm font-body">{resource.desc}</p>
                 </motion.div>

@@ -52,17 +52,14 @@ export default function Navigation() {
           transition={{ delay: 0.5 }}
         >
           <Link to="/" className="block group">
-            <span className="text-[10px] tracking-[0.3em] text-muted-foreground uppercase block mb-1">
-              Center for
-            </span>
             <motion.span 
-              className="font-display text-xl font-semibold text-foreground block px-2 py-1 inline-block group-hover:text-primary transition-colors"
+              className="font-display text-xl font-semibold text-foreground block group-hover:text-primary transition-colors"
               whileHover={{ scale: 1.02 }}
             >
-              COSMIC HORIZONS
+              COSMIC HORIZON
             </motion.span>
             <span className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase block mt-1">
-              International Initiative
+              Initiative
             </span>
           </Link>
         </motion.div>
@@ -164,14 +161,11 @@ export default function Navigation() {
       >
         <div className="flex items-center justify-between px-4 py-4">
           <Link to="/" className="flex flex-col">
-            <motion.span 
-              className="text-[8px] tracking-[0.2em] text-muted-foreground uppercase"
-              whileHover={{ scale: 1.02 }}
-            >
-              Center for
-            </motion.span>
             <span className="font-display text-sm font-semibold text-foreground">
-              COSMIC HORIZONS
+              COSMIC HORIZON
+            </span>
+            <span className="text-[8px] tracking-[0.2em] text-muted-foreground uppercase">
+              Initiative
             </span>
           </Link>
 
