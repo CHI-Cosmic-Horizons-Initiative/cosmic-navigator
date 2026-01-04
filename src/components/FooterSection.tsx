@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { ArrowUpRight, Github, Twitter, Linkedin } from 'lucide-react';
 
 const footerLinks = {
   research: [
@@ -27,13 +28,28 @@ const footerLinks = {
   ]
 };
 
+const socialLinks = [
+  { icon: Twitter, href: '#', label: 'Twitter' },
+  { icon: Github, href: '#', label: 'GitHub' },
+  { icon: Linkedin, href: '#', label: 'LinkedIn' },
+];
+
 export default function FooterSection() {
   return (
-    <footer className="py-16 lg:py-24 relative z-10 lg:pl-64 bg-card border-t border-border/20">
+    <footer className="py-16 lg:py-24 relative z-10 lg:pl-64 bg-card/80 backdrop-blur-sm border-t border-border/20">
+      {/* Top glow accent */}
+      <div className="absolute top-0 left-64 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+      
       <div className="container mx-auto px-6 lg:px-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
           {/* Logo & Info */}
-          <div className="lg:col-span-1">
+          <motion.div 
+            className="lg:col-span-1"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             <div className="mb-6">
               <span className="text-[10px] tracking-[0.3em] text-muted-foreground uppercase block mb-1">
                 Center for
@@ -45,44 +61,91 @@ export default function FooterSection() {
                 International Initiative
               </span>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed mb-6 font-body">
               Advancing humanity's understanding of the universe through collaborative research and discovery.
             </p>
-          </div>
+            
+            {/* Social Links */}
+            <div className="flex gap-3">
+              {socialLinks.map((social) => {
+                const Icon = social.icon;
+                return (
+                  <motion.a
+                    key={social.label}
+                    href={social.href}
+                    aria-label={social.label}
+                    className="p-2 glass-panel hover:bg-primary/20 transition-colors"
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Icon className="w-4 h-4 text-muted-foreground" />
+                  </motion.a>
+                );
+              })}
+            </div>
+          </motion.div>
 
           {/* Links */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h4 className="text-xs uppercase tracking-wider text-foreground mb-4">
+          {Object.entries(footerLinks).map(([category, links], categoryIndex) => (
+            <motion.div 
+              key={category}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: categoryIndex * 0.1 }}
+            >
+              <h4 className="text-xs uppercase tracking-wider text-foreground mb-4 flex items-center gap-2">
                 {category}
+                <span className="w-8 h-px bg-border" />
               </h4>
-              <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <a 
+              <ul className="space-y-2.5">
+                {links.map((link, linkIndex) => (
+                  <motion.li 
+                    key={link.label}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: categoryIndex * 0.1 + linkIndex * 0.05 }}
+                  >
+                    <motion.a 
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group"
+                      whileHover={{ x: 4 }}
                     >
                       {link.label}
-                    </a>
-                  </li>
+                      <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all" />
+                    </motion.a>
+                  </motion.li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-border/20 flex flex-col md:flex-row justify-between items-center gap-4">
+        <motion.div 
+          className="pt-8 border-t border-border/20 flex flex-col md:flex-row justify-between items-center gap-4"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
           <p className="text-sm text-muted-foreground">
             © 2024 Cosmic Horizons Initiative. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Terms of Use</a>
-            <a href="#" className="hover:text-foreground transition-colors">Accessibility</a>
+            {['Privacy Policy', 'Terms of Use', 'Accessibility'].map((item) => (
+              <motion.a 
+                key={item}
+                href="#" 
+                className="hover:text-foreground transition-colors"
+                whileHover={{ y: -2 }}
+              >
+                {item}
+              </motion.a>
+            ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );

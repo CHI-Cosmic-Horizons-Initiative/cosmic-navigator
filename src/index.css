@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -22,7 +22,7 @@
     --secondary: 260 60% 50%;
     --secondary-foreground: 210 20% 95%;
 
-    --muted: 220 40% 15%;
+    --muted: 220 40% 12%;
     --muted-foreground: 210 15% 60%;
 
     --accent: 45 80% 60%;
@@ -31,15 +31,15 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 30% 20%;
-    --input: 220 30% 20%;
+    --border: 220 30% 18%;
+    --input: 220 30% 18%;
     --ring: 200 100% 70%;
 
     --radius: 0.75rem;
 
     /* Custom Cosmic Variables */
     --cosmic-black: 220 50% 2%;
-    --cosmic-deep: 220 60% 8%;
+    --cosmic-deep: 220 60% 6%;
     --nebula-purple: 270 60% 40%;
     --nebula-cyan: 190 100% 50%;
     --stellar-white: 210 20% 95%;
@@ -47,24 +47,27 @@
     --ionized-blue: 200 100% 70%;
 
     /* Gradients */
-    --gradient-cosmic: linear-gradient(180deg, hsl(220 50% 2%) 0%, hsl(220 60% 8%) 50%, hsl(270 40% 12%) 100%);
+    --gradient-cosmic: linear-gradient(180deg, hsl(220 50% 2%) 0%, hsl(220 60% 6%) 50%, hsl(270 40% 10%) 100%);
     --gradient-nebula: radial-gradient(ellipse at center, hsl(270 60% 20% / 0.3) 0%, transparent 70%);
     --gradient-glow: radial-gradient(circle, hsl(200 100% 70% / 0.4) 0%, transparent 60%);
     --gradient-stellar: linear-gradient(135deg, hsl(200 100% 70%) 0%, hsl(270 60% 50%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(220 45% 8% / 0.8) 0%, hsl(220 45% 4% / 0.6) 100%);
 
     /* Shadows & Glows */
     --shadow-cosmic: 0 0 60px hsl(200 100% 70% / 0.15);
     --shadow-nebula: 0 0 100px hsl(270 60% 50% / 0.2);
+    --shadow-elevated: 0 25px 50px -12px hsl(220 50% 2% / 0.5);
     --glow-primary: 0 0 30px hsl(200 100% 70% / 0.5);
     --glow-accent: 0 0 20px hsl(45 80% 60% / 0.4);
+    --glow-soft: 0 0 40px hsl(200 100% 70% / 0.2);
 
     --sidebar-background: 220 50% 2%;
     --sidebar-foreground: 210 20% 95%;
     --sidebar-primary: 200 100% 70%;
     --sidebar-primary-foreground: 220 50% 2%;
-    --sidebar-accent: 220 40% 15%;
+    --sidebar-accent: 220 40% 12%;
     --sidebar-accent-foreground: 210 20% 95%;
-    --sidebar-border: 220 30% 20%;
+    --sidebar-border: 220 30% 18%;
     --sidebar-ring: 200 100% 70%;
   }
 
@@ -79,14 +82,14 @@
     --primary-foreground: 220 50% 2%;
     --secondary: 260 60% 50%;
     --secondary-foreground: 210 20% 95%;
-    --muted: 220 40% 15%;
+    --muted: 220 40% 12%;
     --muted-foreground: 210 15% 60%;
     --accent: 45 80% 60%;
     --accent-foreground: 220 50% 2%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 220 30% 20%;
-    --input: 220 30% 20%;
+    --border: 220 30% 18%;
+    --input: 220 30% 18%;
     --ring: 200 100% 70%;
   }
 }
@@ -111,17 +114,76 @@
     font-family: 'Playfair Display', serif;
   }
 
+  .font-body {
+    font-family: 'IBM Plex Sans', 'Outfit', system-ui, sans-serif;
+  }
+
   .text-gradient {
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-stellar);
   }
 
+  /* Glass Panels - Frosted depth-aware */
   .glass-panel {
-    @apply backdrop-blur-xl border border-border/30;
-    background: hsl(var(--card) / 0.6);
-    box-shadow: var(--shadow-cosmic);
+    @apply backdrop-blur-xl border border-border/30 rounded-lg;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card) / 0.7) 0%,
+      hsl(var(--card) / 0.5) 100%
+    );
+    box-shadow: 
+      var(--shadow-cosmic),
+      inset 0 1px 0 0 hsl(var(--foreground) / 0.05);
   }
 
+  .glass-panel-hover {
+    @apply glass-panel transition-all duration-500;
+  }
+
+  .glass-panel-hover:hover {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card) / 0.8) 0%,
+      hsl(var(--card) / 0.6) 100%
+    );
+    box-shadow: 
+      var(--shadow-cosmic),
+      var(--glow-soft),
+      inset 0 1px 0 0 hsl(var(--foreground) / 0.08);
+    transform: translateY(-2px);
+  }
+
+  /* Holographic Cards */
+  .holographic-card {
+    @apply relative overflow-hidden rounded-lg;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card) / 0.6) 0%,
+      hsl(var(--muted) / 0.4) 100%
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.4);
+  }
+
+  .holographic-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      45deg,
+      transparent 40%,
+      hsl(var(--primary) / 0.1) 50%,
+      transparent 60%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.8s ease;
+  }
+
+  .holographic-card:hover::before {
+    transform: translateX(100%);
+  }
+
+  /* Glow Effects */
   .glow-primary {
     box-shadow: var(--glow-primary);
   }
@@ -130,10 +192,15 @@
     box-shadow: var(--glow-accent);
   }
 
+  .glow-soft {
+    box-shadow: var(--glow-soft);
+  }
+
   .cosmic-section {
     @apply relative min-h-screen flex items-center justify-center overflow-hidden;
   }
 
+  /* Holographic Text */
   .holographic-text {
     @apply relative;
     text-shadow: 
@@ -142,6 +209,7 @@
       0 0 40px hsl(var(--primary) / 0.1);
   }
 
+  /* Stellar Border with Gradient */
   .stellar-border {
     @apply relative;
     border: 1px solid transparent;
@@ -160,24 +228,136 @@
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+  }
+
+  .stellar-border:hover::before {
+    opacity: 1;
+  }
+
+  /* Orbital Menus / Data Nodes */
+  .orbital-node {
+    @apply relative rounded-full p-4 transition-all duration-500;
+    background: radial-gradient(
+      circle at center,
+      hsl(var(--primary) / 0.2) 0%,
+      transparent 70%
+    );
+    border: 1px solid hsl(var(--primary) / 0.3);
+  }
+
+  .orbital-node:hover {
+    background: radial-gradient(
+      circle at center,
+      hsl(var(--primary) / 0.3) 0%,
+      transparent 70%
+    );
+    box-shadow: var(--glow-primary);
+    transform: scale(1.05);
+  }
+
+  /* Data Overlay Panels */
+  .data-overlay {
+    @apply relative p-6 rounded-lg;
+    background: linear-gradient(
+      180deg,
+      hsl(var(--card) / 0.9) 0%,
+      hsl(var(--card) / 0.7) 100%
+    );
+    border: 1px solid hsl(var(--primary) / 0.2);
+    box-shadow: 
+      0 0 0 1px hsl(var(--primary) / 0.05),
+      var(--shadow-elevated);
+  }
+
+  /* Stellar Tooltips */
+  .stellar-tooltip {
+    @apply absolute z-50 px-3 py-2 text-sm rounded-md;
+    background: hsl(var(--popover));
+    border: 1px solid hsl(var(--primary) / 0.3);
+    box-shadow: var(--glow-soft);
+  }
+
+  /* Cinematic Section Transitions */
+  .section-fade-in {
+    @apply opacity-0 translate-y-8;
+    transition: opacity 1s ease-out, transform 1s ease-out;
+  }
+
+  .section-fade-in.visible {
+    @apply opacity-100 translate-y-0;
   }
 }
 
 @layer utilities {
+  /* Float Animation */
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
 
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .animate-float-fast {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  /* Pulse Animations */
   .animate-pulse-slow {
     animation: pulse-slow 4s ease-in-out infinite;
   }
 
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  /* Twinkle */
   .animate-twinkle {
     animation: twinkle 3s ease-in-out infinite;
   }
 
+  /* Drift */
   .animate-drift {
     animation: drift 20s linear infinite;
+  }
+
+  /* Orbit */
+  .animate-orbit {
+    animation: orbit 30s linear infinite;
+  }
+
+  /* Warp / Hyperspace */
+  .animate-warp {
+    animation: warp 2s ease-in-out;
+  }
+
+  /* Shimmer for loading states */
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--primary) / 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* Cinematic Fade */
+  .animate-cinematic-fade {
+    animation: cinematicFade 1.5s ease-out forwards;
+  }
+
+  /* Scale Spring */
+  .animate-scale-spring {
+    animation: scaleSpring 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* Slide Reveal */
+  .animate-slide-reveal {
+    animation: slideReveal 0.8s ease-out forwards;
   }
 
   @keyframes float {
@@ -195,6 +375,15 @@
     }
     50% {
       opacity: 1;
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px hsl(var(--primary) / 0.6);
     }
   }
 
@@ -218,10 +407,142 @@
     }
   }
 
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg) translateX(100px) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(100px) rotate(-360deg);
+    }
+  }
+
+  @keyframes warp {
+    0% {
+      transform: scale(1);
+      filter: blur(0px);
+    }
+    50% {
+      transform: scale(1.02);
+      filter: blur(2px);
+    }
+    100% {
+      transform: scale(1);
+      filter: blur(0px);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  @keyframes cinematicFade {
+    0% {
+      opacity: 0;
+      transform: translateY(40px) scale(0.98);
+      filter: blur(4px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0px);
+    }
+  }
+
+  @keyframes scaleSpring {
+    0% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    60% {
+      transform: scale(1.02);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideReveal {
+    0% {
+      opacity: 0;
+      transform: translateX(-30px);
+      clip-path: inset(0 100% 0 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+      clip-path: inset(0 0% 0 0);
+    }
+  }
+
+  /* Animation Delays */
+  .delay-75 { animation-delay: 75ms; }
   .delay-100 { animation-delay: 100ms; }
+  .delay-150 { animation-delay: 150ms; }
   .delay-200 { animation-delay: 200ms; }
   .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
   .delay-500 { animation-delay: 500ms; }
+  .delay-600 { animation-delay: 600ms; }
   .delay-700 { animation-delay: 700ms; }
+  .delay-800 { animation-delay: 800ms; }
   .delay-1000 { animation-delay: 1000ms; }
+  .delay-1200 { animation-delay: 1200ms; }
+
+  /* Smooth scroll snap for cosmic journey */
+  .scroll-smooth-cosmic {
+    scroll-behavior: smooth;
+    scroll-snap-type: y proximity;
+  }
+
+  .snap-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+
+  /* Parallax depth layers */
+  .parallax-slow {
+    will-change: transform;
+    transform: translateZ(-2px) scale(3);
+  }
+
+  .parallax-medium {
+    will-change: transform;
+    transform: translateZ(-1px) scale(2);
+  }
+
+  .parallax-fast {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-float,
+    .animate-float-slow,
+    .animate-float-fast,
+    .animate-pulse-slow,
+    .animate-pulse-glow,
+    .animate-twinkle,
+    .animate-drift,
+    .animate-orbit,
+    .animate-warp,
+    .animate-shimmer,
+    .animate-cinematic-fade,
+    .animate-scale-spring,
+    .animate-slide-reveal {
+      animation: none;
+    }
+
+    .section-fade-in {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 }
