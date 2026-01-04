@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform, useMotionValueEvent, MotionValue } from 'framer-motion';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 
@@ -67,10 +67,27 @@ function clamp(n: number, min: number, max: number) {
 }
 
 export default function HeroSection() {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+
+  // Use framer-motion's useScroll for reliable scroll progress
+  const { scrollYProgress } = useScroll({
+    target: trackRef,
+    offset: ['start start', 'end start'],
+  });
+
+  // Convert scroll progress (0-1) to continuous slide position (0 to slides.length-1)
+  const slideFloat = useTransform(scrollYProgress, [0, 1], [0, heroSlides.length - 1]);
+
+  // Update activeIndex based on scroll progress
+  useMotionValueEvent(slideFloat, 'change', (latest) => {
+    const newIndex = clamp(Math.round(latest), 0, heroSlides.length - 1);
+    if (newIndex !== activeIndex) {
+      setActiveIndex(newIndex);
+    }
+  });
 
   // Preload all images
   useEffect(() => {
@@ -89,48 +106,28 @@ export default function HeroSection() {
     });
   }, []);
 
-  // Scroll-based slide detection using scroll position
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!trackRef.current) return;
-      
-      const trackTop = trackRef.current.getBoundingClientRect().top + window.scrollY;
-      const scrollPosition = window.scrollY;
-      const slideHeight = window.innerHeight;
-      
-      // Calculate which slide we're on based on scroll position relative to track
-      const relativeScroll = scrollPosition - trackTop + slideHeight;
-      const slideIndex = Math.floor(relativeScroll / slideHeight);
-      
-      const clampedIndex = clamp(slideIndex, 0, heroSlides.length - 1);
-      setCurrentSlide(clampedIndex);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial call
-    
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const scrollToSlide = useCallback((index: number) => {
     if (!trackRef.current) return;
-    const trackTop = trackRef.current.getBoundingClientRect().top + window.scrollY;
-    const targetScroll = trackTop + index * window.innerHeight;
+    const trackRect = trackRef.current.getBoundingClientRect();
+    const trackTop = trackRect.top + window.scrollY;
+    const trackHeight = trackRect.height;
+    const slideHeight = trackHeight / heroSlides.length;
+    const targetScroll = trackTop + index * slideHeight;
     window.scrollTo({ top: targetScroll, behavior: 'smooth' });
   }, []);
 
   const scrollToNext = useCallback(() => {
-    if (currentSlide < heroSlides.length - 1) {
-      scrollToSlide(currentSlide + 1);
+    if (activeIndex < heroSlides.length - 1) {
+      scrollToSlide(activeIndex + 1);
     } else {
       document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [currentSlide, scrollToSlide]);
+  }, [activeIndex, scrollToSlide]);
 
-  const transitionDuration = reducedMotion ? 0.2 : 0.95;
+  const transitionDuration = reducedMotion ? 0.2 : 0.7;
 
   return (
-    <div ref={trackRef} className="relative">
+    <div ref={trackRef} className="relative" style={{ height: `${heroSlides.length * 100}vh` }}>
       {/* Sticky visual layer */}
       <section id="home" className="sticky top-0 h-screen w-full overflow-hidden lg:pl-64">
         {/* Loading shimmer */}
@@ -138,31 +135,15 @@ export default function HeroSection() {
           <div className="absolute inset-0 bg-background animate-shimmer z-50" />
         )}
 
-        {/* Background Slides */}
+        {/* Background Slides with scroll-linked interpolation */}
         {heroSlides.map((slide, index) => (
-          <motion.div
+          <SlideImage
             key={index}
-            initial={false}
-            animate={{
-              opacity: currentSlide === index ? 1 : 0,
-              scale: currentSlide === index ? 1.05 : 1.12,
-              filter: reducedMotion ? 'blur(0px)' : (currentSlide === index ? 'blur(0px)' : 'blur(6px)'),
-            }}
-            transition={{ duration: transitionDuration, ease: [0.4, 0, 0.2, 1] }}
-            className="absolute inset-0"
-            style={{ zIndex: currentSlide === index ? 1 : 0 }}
-          >
-            <motion.img
-              src={slide.image}
-              alt={slide.title}
-              className="w-full h-full object-cover"
-              animate={reducedMotion ? {} : { scale: currentSlide === index ? [1.05, 1.08] : 1.12 }}
-              transition={{ duration: 10, ease: 'linear', repeat: Infinity, repeatType: 'reverse' }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-          </motion.div>
+            slide={slide}
+            index={index}
+            slideFloat={slideFloat}
+            reducedMotion={reducedMotion}
+          />
         ))}
 
         {/* Floating Particles */}
@@ -184,7 +165,7 @@ export default function HeroSection() {
         <div className="relative z-20 h-full flex flex-col justify-center px-8 md:px-16 lg:px-20">
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentSlide}
+              key={activeIndex}
               initial={{ opacity: 0, y: reducedMotion ? 0 : 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: reducedMotion ? 0 : -10 }}
@@ -207,7 +188,7 @@ export default function HeroSection() {
                     animate={{ opacity: 1 }}
                     className="inline-block text-xs font-mono text-primary/60 mb-2"
                   >
-                    {String(currentSlide + 1).padStart(2, '0')} / {String(heroSlides.length).padStart(2, '0')}
+                    {String(activeIndex + 1).padStart(2, '0')} / {String(heroSlides.length).padStart(2, '0')}
                   </motion.span>
 
                   <motion.span
@@ -225,7 +206,7 @@ export default function HeroSection() {
                     transition={{ duration: reducedMotion ? 0.2 : 0.7, delay: 0.08 }}
                     className="font-display text-3xl md:text-5xl lg:text-6xl font-medium text-foreground leading-tight mb-6"
                   >
-                    {heroSlides[currentSlide].title}
+                    {heroSlides[activeIndex].title}
                   </motion.h1>
 
                   <motion.p
@@ -234,11 +215,11 @@ export default function HeroSection() {
                     transition={{ duration: reducedMotion ? 0.2 : 0.6, delay: 0.16 }}
                     className="text-base md:text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed font-body"
                   >
-                    {heroSlides[currentSlide].description}
+                    {heroSlides[activeIndex].description}
                   </motion.p>
 
                   <motion.a
-                    href={heroSlides[currentSlide].link}
+                    href={heroSlides[activeIndex].link}
                     initial={{ y: reducedMotion ? 0 : 10, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: reducedMotion ? 0.2 : 0.6, delay: 0.24 }}
@@ -268,10 +249,10 @@ export default function HeroSection() {
             >
               <span
                 className={`block w-2 h-2 rounded-full transition-all duration-500 ${
-                  currentSlide === index ? 'bg-primary scale-125' : 'bg-foreground/20 hover:bg-foreground/40'
+                  activeIndex === index ? 'bg-primary scale-125' : 'bg-foreground/20 hover:bg-foreground/40'
                 }`}
               />
-              {currentSlide === index && (
+              {activeIndex === index && (
                 <motion.span
                   layoutId="heroSlideIndicator"
                   className="absolute inset-0 rounded-full border border-primary"
@@ -296,7 +277,7 @@ export default function HeroSection() {
         >
           <motion.button type="button" onClick={scrollToNext} className="flex flex-col items-center gap-2 group" whileHover={{ scale: 1.07 }}>
             <span className="text-xs text-muted-foreground uppercase tracking-widest group-hover:text-primary transition-colors">
-              {currentSlide < heroSlides.length - 1 ? 'Scroll for next highlight' : 'Continue'}
+              {activeIndex < heroSlides.length - 1 ? 'Scroll for next highlight' : 'Continue'}
             </span>
             <motion.div animate={reducedMotion ? {} : { y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}>
               <ChevronDown className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -306,19 +287,70 @@ export default function HeroSection() {
 
         {/* Progress */}
         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-border/20 z-30 lg:left-64">
-          <motion.div className="h-full bg-primary/50" style={{ width: `${((currentSlide + 1) / heroSlides.length) * 100}%` }} transition={{ duration: 0.25 }} />
+          <motion.div className="h-full bg-primary/50" style={{ width: `${((activeIndex + 1) / heroSlides.length) * 100}%` }} transition={{ duration: 0.25 }} />
         </div>
       </section>
-
-      {/* Scroll track - creates the 7-screen scroll distance with snap points */}
-      <div aria-hidden className="relative hero-scroll-track">
-        {heroSlides.map((_, i) => (
-          <div
-            key={i}
-            className="h-screen hero-snap-child"
-          />
-        ))}
-      </div>
     </div>
+  );
+}
+
+// Separate component for scroll-interpolated slide images
+interface SlideImageProps {
+  slide: { image: string; title: string };
+  index: number;
+  slideFloat: MotionValue<number>;
+  reducedMotion: boolean | null;
+}
+
+function SlideImage({ slide, index, slideFloat, reducedMotion }: SlideImageProps) {
+  // Calculate opacity based on distance from current position
+  const opacity = useTransform(slideFloat, (value: number) => {
+    const distance = Math.abs(value - index);
+    return clamp(1 - distance, 0, 1);
+  });
+
+  // Scale: active slide is 1.05, others are 1.12
+  const scale = useTransform(slideFloat, (value: number) => {
+    const distance = Math.abs(value - index);
+    return 1.05 + distance * 0.07;
+  });
+
+  // Blur: active slide has no blur, others are blurred based on distance
+  const blur = useTransform(slideFloat, (value: number) => {
+    if (reducedMotion) return 0;
+    const distance = Math.abs(value - index);
+    return distance * 6;
+  });
+
+  // Z-index: highest for most visible slide
+  const zIndex = useTransform(slideFloat, (value: number) => {
+    const distance = Math.abs(value - index);
+    return Math.round((1 - distance) * 10);
+  });
+
+  // Create filter string from blur value
+  const filterStyle = useTransform(blur, (b: number) => `blur(${b}px)`);
+
+  return (
+    <motion.div
+      className="absolute inset-0"
+      style={{
+        opacity,
+        scale,
+        filter: filterStyle,
+        zIndex,
+      }}
+    >
+      <motion.img
+        src={slide.image}
+        alt={slide.title}
+        className="w-full h-full object-cover"
+        animate={reducedMotion ? {} : { scale: [1.0, 1.03] }}
+        transition={{ duration: 10, ease: 'linear', repeat: Infinity, repeatType: 'reverse' }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
+    </motion.div>
   );
 }
