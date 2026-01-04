@@ -67,6 +67,7 @@ const heroSlides = [
 export default function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [showDots, setShowDots] = useState(true);
   const reducedMotion = useReducedMotion();
 
   // Preload all images (and mark loaded when all complete)
@@ -90,7 +91,7 @@ export default function HeroSection() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Track active slide using IntersectionObserver (reliable + scroll-native)
+  // Track active slide and visibility using IntersectionObserver
   useEffect(() => {
     const els = heroSlides
       .map((_, i) => document.getElementById(`hero-slide-${i}`))
@@ -117,6 +118,22 @@ export default function HeroSection() {
     return () => io.disconnect();
   }, []);
 
+  // Hide dots when scrolled past hero section
+  useEffect(() => {
+    const handleScroll = () => {
+      const lastSlide = document.getElementById(`hero-slide-${heroSlides.length - 1}`);
+      if (!lastSlide) return;
+      
+      const rect = lastSlide.getBoundingClientRect();
+      // Hide dots when the last slide is above the viewport
+      setShowDots(rect.bottom > 0);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial check
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const scrollToSlide = useCallback((index: number) => {
     const el = document.getElementById(`hero-slide-${index}`);
     if (!el) return;
@@ -139,10 +156,12 @@ export default function HeroSection() {
         ))}
       </Helmet>
 
-      {/* Fixed dot navigation - fully transparent, borderless */}
+      {/* Fixed dot navigation - fully transparent, borderless, hidden after hero */}
       <nav
         aria-label="Highlight navigation"
-        className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-4 pointer-events-auto"
+        className={`fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-4 pointer-events-auto transition-opacity duration-500 ${
+          showDots ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
       >
         {heroSlides.map((slide, index) => (
           <motion.button
