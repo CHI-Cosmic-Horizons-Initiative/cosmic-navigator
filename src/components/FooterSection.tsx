@@ -1,30 +1,31 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { ArrowUpRight, Github, Twitter, Linkedin } from 'lucide-react';
 
 const footerLinks = {
   research: [
-    { label: 'Big Questions', href: '#questions' },
-    { label: 'Research Topics', href: '#research' },
-    { label: 'Publications', href: '#' },
-    { label: 'Data Resources', href: '#' },
+    { label: 'Big Questions', href: '/science' },
+    { label: 'Research Topics', href: '/research' },
+    { label: 'Publications', href: '/research' },
+    { label: 'Data Resources', href: '/explore' },
   ],
   community: [
-    { label: 'People', href: '#community' },
-    { label: 'Institutions', href: '#' },
-    { label: 'Partners', href: '#' },
-    { label: 'Events', href: '#' },
+    { label: 'People', href: '/community' },
+    { label: 'Institutions', href: '/community' },
+    { label: 'Partners', href: '/community' },
+    { label: 'Events', href: '/news' },
   ],
   opportunities: [
-    { label: 'Fellowships', href: '#programs' },
-    { label: 'Careers', href: '#' },
-    { label: 'Internships', href: '#' },
-    { label: 'Volunteer', href: '#' },
+    { label: 'Fellowships', href: '/programs' },
+    { label: 'Careers', href: '/programs' },
+    { label: 'Internships', href: '/programs' },
+    { label: 'Volunteer', href: '/contact' },
   ],
   about: [
-    { label: 'Our Mission', href: '#about' },
-    { label: 'Leadership', href: '#' },
-    { label: 'Facilities', href: '#domains' },
-    { label: 'Contact', href: '#' },
+    { label: 'Our Mission', href: '/about' },
+    { label: 'Leadership', href: '/about' },
+    { label: 'Facilities', href: '/explore' },
+    { label: 'Contact', href: '/contact' },
   ]
 };
 
@@ -107,14 +108,15 @@ export default function FooterSection() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.4, delay: categoryIndex * 0.1 + linkIndex * 0.05 }}
                   >
-                    <motion.a 
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group"
-                      whileHover={{ x: 4 }}
-                    >
-                      {link.label}
-                      <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all" />
-                    </motion.a>
+                    <motion.div whileHover={{ x: 4 }}>
+                      <Link 
+                        to={link.href}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group"
+                      >
+                        {link.label}
+                        <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all" />
+                      </Link>
+                    </motion.div>
                   </motion.li>
                 ))}
               </ul>
@@ -131,7 +133,7 @@ export default function FooterSection() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <p className="text-sm text-muted-foreground">
-            © 2024 Cosmic Horizons Initiative. All rights reserved.
+            © 2026 Cosmic Horizons Initiative. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-muted-foreground">
             {['Privacy Policy', 'Terms of Use', 'Accessibility'].map((item) => (
