@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform, useMotionValueEvent, MotionValue } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion, useTransform, MotionValue, useMotionValue } from 'framer-motion';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 
@@ -72,22 +72,46 @@ export default function HeroSection() {
   const trackRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
-  // Use framer-motion's useScroll for reliable scroll progress
-  const { scrollYProgress } = useScroll({
-    target: trackRef,
-    offset: ['start start', 'end start'],
-  });
+  // Continuous slide position driven by window scroll (reliable with sticky layouts)
+  const slideFloat = useMotionValue(0);
 
-  // Convert scroll progress (0-1) to continuous slide position (0 to slides.length-1)
-  const slideFloat = useTransform(scrollYProgress, [0, 1], [0, heroSlides.length - 1]);
+  useEffect(() => {
+    let raf = 0;
 
-  // Update activeIndex based on scroll progress
-  useMotionValueEvent(slideFloat, 'change', (latest) => {
-    const newIndex = clamp(Math.round(latest), 0, heroSlides.length - 1);
-    if (newIndex !== activeIndex) {
-      setActiveIndex(newIndex);
-    }
-  });
+    const update = () => {
+      raf = 0;
+      if (!trackRef.current) return;
+
+      const trackRect = trackRef.current.getBoundingClientRect();
+      const trackTop = trackRect.top + window.scrollY;
+      const trackHeight = heroSlides.length * window.innerHeight;
+      const scrollRange = Math.max(1, trackHeight - window.innerHeight);
+
+      const rawProgress = (window.scrollY - trackTop) / scrollRange;
+      const progress = clamp(rawProgress, 0, 1);
+
+      const slide = progress * (heroSlides.length - 1);
+      slideFloat.set(slide);
+
+      const idx = clamp(Math.round(slide), 0, heroSlides.length - 1);
+      setActiveIndex((prev) => (prev === idx ? prev : idx));
+    };
+
+    const onScroll = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(update);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, [slideFloat]);
 
   // Preload all images
   useEffect(() => {
@@ -108,11 +132,8 @@ export default function HeroSection() {
 
   const scrollToSlide = useCallback((index: number) => {
     if (!trackRef.current) return;
-    const trackRect = trackRef.current.getBoundingClientRect();
-    const trackTop = trackRect.top + window.scrollY;
-    const trackHeight = trackRect.height;
-    const slideHeight = trackHeight / heroSlides.length;
-    const targetScroll = trackTop + index * slideHeight;
+    const trackTop = trackRef.current.getBoundingClientRect().top + window.scrollY;
+    const targetScroll = trackTop + index * window.innerHeight;
     window.scrollTo({ top: targetScroll, behavior: 'smooth' });
   }, []);
 
@@ -290,6 +311,13 @@ export default function HeroSection() {
           <motion.div className="h-full bg-primary/50" style={{ width: `${((activeIndex + 1) / heroSlides.length) * 100}%` }} transition={{ duration: 0.25 }} />
         </div>
       </section>
+
+      {/* Scroll track: creates distinct 1-screen segments for each highlight */}
+      <div aria-hidden className="relative hero-scroll-track">
+        {heroSlides.map((_, i) => (
+          <div key={i} className="h-screen hero-snap-child" />
+        ))}
+      </div>
     </div>
   );
 }
