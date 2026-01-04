@@ -35,21 +35,19 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Desktop Sidebar Navigation - Transparent & Dynamic */}
+      {/* Desktop Sidebar Navigation - Transparent & Borderless */}
       <motion.nav
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        className={`fixed left-0 top-0 h-full z-50 hidden lg:flex flex-col w-64 backdrop-blur-md border-r border-border/10 transition-colors duration-500 ${
-          isScrolled ? 'bg-background/60' : 'bg-background/30'
+        className={`fixed left-0 top-0 h-full z-50 hidden lg:flex flex-col w-64 backdrop-blur-md transition-colors duration-500 ${
+          isScrolled ? 'bg-background/55' : 'bg-background/20'
         }`}
       >
-        {/* Animated gradient accent */}
-        <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent" />
         
         {/* Logo */}
         <motion.div 
-          className="p-6 border-b border-border/20"
+          className="p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
@@ -111,7 +109,7 @@ export default function Navigation() {
 
         {/* Search */}
         <motion.div 
-          className="p-6 border-t border-border/20"
+          className="p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
@@ -132,7 +130,7 @@ export default function Navigation() {
 
         {/* Bottom Links */}
         <motion.div 
-          className="p-6 border-t border-border/20 space-y-2"
+          className="p-6 space-y-2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9 }}
@@ -162,7 +160,7 @@ export default function Navigation() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
         className={`fixed top-0 left-0 right-0 z-50 lg:hidden transition-all duration-300 ${
-          isScrolled ? 'bg-background/95 backdrop-blur-xl border-b border-border/20' : 'bg-transparent'
+          isScrolled ? 'bg-background/35 backdrop-blur-md' : 'bg-transparent'
         }`}
       >
         <div className="flex items-center justify-between px-4 py-4">
@@ -220,7 +218,7 @@ export default function Navigation() {
             className="fixed inset-0 z-40 lg:hidden pt-16"
           >
             <motion.div 
-              className="absolute inset-0 bg-background/98 backdrop-blur-xl" 
+              className="absolute inset-0 bg-background/50 backdrop-blur-md" 
               onClick={() => setIsMobileMenuOpen(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
