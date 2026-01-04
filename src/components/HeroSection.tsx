@@ -1,116 +1,143 @@
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { ChevronDown, ArrowRight } from 'lucide-react';
+import nebulaHero from '@/assets/nebula-hero.jpg';
+import blackHoleDisk from '@/assets/black-hole-disk.jpg';
+import quasar from '@/assets/quasar.png';
+import blackHoleJet from '@/assets/black-hole-jet.jpeg';
+
+const heroSlides = [
+  {
+    image: nebulaHero,
+    title: "Revealing the Hidden Universe Through Multi-Wavelength Astronomy",
+    description: "Our researchers have captured stunning new imagery of stellar nurseries, revealing the complex processes of star formation across cosmic scales.",
+    link: "#research"
+  },
+  {
+    image: blackHoleDisk,
+    title: "New X-ray Observations Reveal Black Hole Growth Dynamics",
+    description: "Precision measurements of supermassive black holes are reshaping our understanding of how these cosmic giants feed and evolve.",
+    link: "#research"
+  },
+  {
+    image: quasar,
+    title: "Distant Quasars Illuminate the Early Universe",
+    description: "Using the most powerful telescopes on Earth and in space, we're peering back to the dawn of cosmic time.",
+    link: "#research"
+  },
+  {
+    image: blackHoleJet,
+    title: "Gravitational Wave Astronomy Opens New Windows",
+    description: "Multi-messenger observations are revolutionizing how we study the most violent events in the cosmos.",
+    link: "#research"
+  }
+];
 
 export default function HeroSection() {
-  const scrollToMission = () => {
-    document.getElementById('mission')?.scrollIntoView({ behavior: 'smooth' });
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const scrollToContent = () => {
+    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <section className="cosmic-section min-h-screen relative z-10">
-      {/* Gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-background/80 pointer-events-none" />
-      
-      {/* Nebula glow effect */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-radial from-secondary/10 via-primary/5 to-transparent blur-3xl pointer-events-none" />
-      
-      <div className="container mx-auto px-6 relative z-10">
+    <section id="home" className="relative h-screen w-full overflow-hidden lg:pl-64">
+      {/* Background Slides */}
+      <AnimatePresence mode="wait">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2 }}
-          className="text-center max-w-4xl mx-auto"
+          key={currentSlide}
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.5 }}
+          className="absolute inset-0"
         >
-          {/* Tagline */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="text-primary/80 text-sm tracking-[0.3em] uppercase mb-8 font-medium"
-          >
-            International Astronomy & Space Science Initiative
-          </motion.p>
+          <img
+            src={heroSlides[currentSlide].image}
+            alt={heroSlides[currentSlide].title}
+            className="w-full h-full object-cover"
+          />
+          {/* Overlay gradients */}
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+        </motion.div>
+      </AnimatePresence>
 
-          {/* Main Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 1.2 }}
-            className="font-display text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight mb-6"
-          >
-            <span className="text-foreground">Cosmic</span>{' '}
-            <span className="text-gradient">Horizons</span>
-          </motion.h1>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 1.2 }}
-            className="text-2xl md:text-3xl lg:text-4xl font-light text-foreground/80 mb-8 tracking-wide"
-          >
-            Initiative
-          </motion.h2>
-
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.4, duration: 1.5 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
-          >
-            Inspiring curiosity, fostering exploration, and igniting scientific innovation
-            across the cosmos.
-          </motion.p>
-
-          {/* CTA Buttons */}
+      {/* Content */}
+      <div className="relative z-10 h-full flex flex-col justify-center px-8 md:px-16 lg:px-20">
+        <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            key={currentSlide}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.8, duration: 1 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-3xl"
           >
-            <Button 
-              variant="hero" 
-              size="xl"
-              onClick={scrollToMission}
-              className="group"
-            >
-              <span>Explore the Cosmos</span>
-              <motion.span
-                animate={{ x: [0, 4, 0] }}
-                transition={{ repeat: Infinity, duration: 1.5 }}
+            {/* Slide content */}
+            <div className="border-l-2 border-primary/50 pl-6 md:pl-8">
+              <motion.h1
+                className="font-display text-3xl md:text-5xl lg:text-6xl font-medium text-foreground leading-tight mb-6"
               >
-                →
-              </motion.span>
-            </Button>
-            <Button 
-              variant="cosmic" 
-              size="lg"
-              onClick={scrollToMission}
-            >
-              Our Mission
-            </Button>
-          </motion.div>
-        </motion.div>
+                {heroSlides[currentSlide].title}
+              </motion.h1>
+              
+              <motion.p
+                className="text-base md:text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed"
+              >
+                {heroSlides[currentSlide].description}
+              </motion.p>
 
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.5, duration: 1 }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2"
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-            className="cursor-pointer"
-            onClick={scrollToMission}
-          >
-            <ChevronDown className="w-8 h-8 text-primary/50 hover:text-primary transition-colors" />
+              <motion.a
+                href={heroSlides[currentSlide].link}
+                className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors group"
+              >
+                <span className="uppercase tracking-widest">Explore</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </motion.a>
+            </div>
           </motion.div>
-        </motion.div>
+        </AnimatePresence>
       </div>
+
+      {/* Slide Indicators */}
+      <div className="absolute right-8 top-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col gap-3">
+        {heroSlides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentSlide(index)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              currentSlide === index
+                ? 'bg-foreground scale-125'
+                : 'bg-foreground/30 hover:bg-foreground/50'
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2, duration: 1 }}
+        className="absolute bottom-8 left-1/2 lg:left-[calc(50%+8rem)] -translate-x-1/2 z-20"
+      >
+        <motion.button
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          onClick={scrollToContent}
+          className="p-2"
+        >
+          <ChevronDown className="w-8 h-8 text-foreground/50 hover:text-foreground transition-colors" />
+        </motion.button>
+      </motion.div>
     </section>
   );
 }
