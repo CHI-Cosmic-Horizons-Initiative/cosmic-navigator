@@ -69,10 +69,10 @@ function clamp(n: number, min: number, max: number) {
 export default function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
-  // Continuous slide position driven by window scroll (reliable with sticky layouts)
+  // Continuous slide position driven by window scroll
   const slideFloat = useMotionValue(0);
 
   useEffect(() => {
@@ -80,16 +80,21 @@ export default function HeroSection() {
 
     const update = () => {
       raf = 0;
-      if (!trackRef.current) return;
+      if (!containerRef.current) return;
 
-      const trackRect = trackRef.current.getBoundingClientRect();
-      const trackTop = trackRect.top + window.scrollY;
-      const trackHeight = heroSlides.length * window.innerHeight;
-      const scrollRange = Math.max(1, trackHeight - window.innerHeight);
+      const rect = containerRef.current.getBoundingClientRect();
+      const containerTop = rect.top + window.scrollY;
+      const containerHeight = rect.height;
+      const windowHeight = window.innerHeight;
+      
+      // Scroll range is total height minus one screen (last slide is fully visible at end)
+      const scrollRange = Math.max(1, containerHeight - windowHeight);
+      
+      // How far we've scrolled into the container
+      const scrolledInto = window.scrollY - containerTop;
+      const progress = clamp(scrolledInto / scrollRange, 0, 1);
 
-      const rawProgress = (window.scrollY - trackTop) / scrollRange;
-      const progress = clamp(rawProgress, 0, 1);
-
+      // Map progress to slide index (0 to 6)
       const slide = progress * (heroSlides.length - 1);
       slideFloat.set(slide);
 
@@ -131,9 +136,9 @@ export default function HeroSection() {
   }, []);
 
   const scrollToSlide = useCallback((index: number) => {
-    if (!trackRef.current) return;
-    const trackTop = trackRef.current.getBoundingClientRect().top + window.scrollY;
-    const targetScroll = trackTop + index * window.innerHeight;
+    if (!containerRef.current) return;
+    const containerTop = containerRef.current.getBoundingClientRect().top + window.scrollY;
+    const targetScroll = containerTop + index * window.innerHeight;
     window.scrollTo({ top: targetScroll, behavior: 'smooth' });
   }, []);
 
@@ -148,7 +153,7 @@ export default function HeroSection() {
   const transitionDuration = reducedMotion ? 0.2 : 0.7;
 
   return (
-    <div ref={trackRef} className="relative" style={{ height: `${heroSlides.length * 100}vh` }}>
+    <div ref={containerRef} className="relative" style={{ height: `${heroSlides.length * 100}vh` }}>
       {/* Sticky visual layer */}
       <section id="home" className="sticky top-0 h-screen w-full overflow-hidden lg:pl-64">
         {/* Loading shimmer */}
@@ -312,12 +317,6 @@ export default function HeroSection() {
         </div>
       </section>
 
-      {/* Scroll track: creates distinct 1-screen segments for each highlight */}
-      <div aria-hidden className="relative hero-scroll-track">
-        {heroSlides.map((_, i) => (
-          <div key={i} className="h-screen hero-snap-child" />
-        ))}
-      </div>
     </div>
   );
 }

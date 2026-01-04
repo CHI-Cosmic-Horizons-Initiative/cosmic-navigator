@@ -35,15 +35,17 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Desktop Sidebar Navigation - CfA Style */}
+      {/* Desktop Sidebar Navigation - Transparent & Dynamic */}
       <motion.nav
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        className="fixed left-0 top-0 h-full z-50 hidden lg:flex flex-col w-64 bg-background/95 backdrop-blur-xl border-r border-border/20"
+        className={`fixed left-0 top-0 h-full z-50 hidden lg:flex flex-col w-64 backdrop-blur-md border-r border-border/10 transition-colors duration-500 ${
+          isScrolled ? 'bg-background/60' : 'bg-background/30'
+        }`}
       >
         {/* Animated gradient accent */}
-        <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/30 to-transparent" />
+        <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent" />
         
         {/* Logo */}
         <motion.div 
