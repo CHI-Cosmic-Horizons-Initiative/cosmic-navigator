@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion, useTransform, MotionValue, useMotionValue } from 'framer-motion';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 import nebulaHero from '@/assets/nebula-hero.jpg';
 import blackHoleDisk from '@/assets/black-hole-disk.jpg';
@@ -69,7 +70,7 @@ function clamp(n: number, min: number, max: number) {
 export default function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
   // Continuous slide position driven by window scroll
@@ -80,17 +81,16 @@ export default function HeroSection() {
 
     const update = () => {
       raf = 0;
-      if (!containerRef.current) return;
+      if (!trackRef.current) return;
 
-      const containerTop = containerRef.current.getBoundingClientRect().top + window.scrollY;
-      const windowHeight = window.innerHeight;
+      const trackTop = trackRef.current.getBoundingClientRect().top + window.scrollY;
+      const vh = window.innerHeight;
 
-      // Our in-flow segments create exactly (slides * 100vh) of scroll.
-      // Map scrolled distance to a continuous slide index 0..(slides-1).
-      const scrolledInto = window.scrollY - containerTop;
-      const slide = clamp(scrolledInto / Math.max(1, windowHeight), 0, heroSlides.length - 1);
+      // The first screen is the sticky hero itself; segments begin AFTER 1 viewport.
+      const scrolledIntoSegments = window.scrollY - trackTop - vh;
+      const slide = clamp(scrolledIntoSegments / Math.max(1, vh), 0, heroSlides.length - 1);
+
       slideFloat.set(slide);
-
       const idx = clamp(Math.round(slide), 0, heroSlides.length - 1);
       setActiveIndex((prev) => (prev === idx ? prev : idx));
     };
@@ -111,21 +111,25 @@ export default function HeroSection() {
     };
   }, [slideFloat]);
 
-  // Preload all images
+  // Preload all images (and mark loaded when all complete)
   useEffect(() => {
     let loaded = 0;
-    heroSlides.forEach((slide) => {
+    const timer = window.setTimeout(() => setImagesLoaded(true), 2500);
+
+    heroSlides.forEach((s) => {
       const img = new Image();
-      img.src = slide.image;
+      img.src = s.image;
       img.onload = () => {
         loaded++;
-        if (loaded === heroSlides.length) setImagesLoaded(true);
+        if (loaded === heroSlides.length) {
+          window.clearTimeout(timer);
+          setImagesLoaded(true);
+        }
       };
-      img.onerror = () => {
-        loaded++;
-        if (loaded === heroSlides.length) setImagesLoaded(true);
-      };
+      img.onerror = img.onload;
     });
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   // Dot navigation: scroll into the in-flow segments (reliable)
@@ -143,10 +147,16 @@ export default function HeroSection() {
   }, [activeIndex, scrollToSlide]);
 
   return (
-    <div ref={containerRef} className="relative" style={{ height: `${heroSlides.length * 100}vh` }}>
+    <div ref={trackRef} className="relative">
+      <Helmet>
+        {heroSlides.map((s) => (
+          <link key={s.image} rel="preload" as="image" href={s.image} />
+        ))}
+      </Helmet>
+
       {/* Sticky visual layer */}
       <section id="home" className="sticky top-0 h-screen w-full overflow-hidden lg:pl-64">
-        {!imagesLoaded && <div className="absolute inset-0 bg-background animate-shimmer z-50" />}
+        {!imagesLoaded && <div className="absolute inset-0 bg-background/60 animate-shimmer pointer-events-none z-0" />}
 
         {heroSlides.map((slide, index) => (
           <SlideImage key={index} slide={slide} index={index} slideFloat={slideFloat} reducedMotion={reducedMotion} />
@@ -287,10 +297,15 @@ export default function HeroSection() {
         </div>
       </section>
 
-      {/* In-flow segments (create the scroll distance + dot targets) */}
-      <div style={{ marginTop: '-100vh' }} aria-hidden="true">
+      {/* In-flow segments (create scroll distance + dot targets) */}
+      <div aria-hidden="true">
         {heroSlides.map((_, index) => (
-          <div key={index} id={`hero-seg-${index}`} className="h-screen w-full" />
+          <div
+            key={index}
+            id={`hero-seg-${index}`}
+            className="h-screen w-full"
+            style={{ scrollMarginTop: 0 }}
+          />
         ))}
       </div>
     </div>
@@ -334,6 +349,8 @@ function SlideImage({ slide, index, slideFloat, reducedMotion }: SlideImageProps
         src={slide.image}
         alt={slide.title}
         className="w-full h-full object-cover"
+        loading="eager"
+        decoding="async"
         animate={reducedMotion ? {} : { scale: [1.0, 1.03] }}
         transition={{ duration: 10, ease: 'linear', repeat: Infinity, repeatType: 'reverse' }}
       />
