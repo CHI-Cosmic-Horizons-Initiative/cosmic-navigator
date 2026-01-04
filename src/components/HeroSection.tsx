@@ -84,22 +84,20 @@ export default function HeroSection() {
 
       const rect = containerRef.current.getBoundingClientRect();
       const containerTop = rect.top + window.scrollY;
-      const containerHeight = rect.height;
       const windowHeight = window.innerHeight;
-      
-      // Scroll range is total height minus one screen (last slide is fully visible at end)
-      const scrollRange = Math.max(1, containerHeight - windowHeight);
-      
-      // How far we've scrolled into the container
-      const scrolledInto = window.scrollY - containerTop;
-      const progress = clamp(scrolledInto / scrollRange, 0, 1);
 
-      // Map progress to slide index (0 to 6)
-      const slide = progress * (heroSlides.length - 1);
+      const scrolledInto = window.scrollY - containerTop;
+      const slide = clamp(scrolledInto / Math.max(1, windowHeight), 0, heroSlides.length - 1);
       slideFloat.set(slide);
 
       const idx = clamp(Math.round(slide), 0, heroSlides.length - 1);
       setActiveIndex((prev) => (prev === idx ? prev : idx));
+
+      // Debug: helps us confirm the scroll math is updating
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.log('[Hero] scrollY', Math.round(window.scrollY), 'slide', slide.toFixed(2), 'idx', idx);
+      }
     };
 
     const onScroll = () => {
@@ -137,8 +135,12 @@ export default function HeroSection() {
 
   const scrollToSlide = useCallback((index: number) => {
     if (!containerRef.current) return;
-    const containerTop = containerRef.current.getBoundingClientRect().top + window.scrollY;
-    const targetScroll = containerTop + index * window.innerHeight;
+    const top = containerRef.current.getBoundingClientRect().top + window.scrollY;
+    const targetScroll = top + index * window.innerHeight;
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.log('[Hero] dot click', index, '->', Math.round(targetScroll));
+    }
     window.scrollTo({ top: targetScroll, behavior: 'smooth' });
   }, []);
 
@@ -360,7 +362,7 @@ function SlideImage({ slide, index, slideFloat, reducedMotion }: SlideImageProps
 
   return (
     <motion.div
-      className="absolute inset-0"
+      className="absolute inset-0 pointer-events-none"
       style={{
         opacity,
         scale,
