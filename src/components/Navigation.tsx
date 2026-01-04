@@ -10,6 +10,8 @@ const navItems = [
   { label: 'Science', href: '/science' },
   { label: 'Research', href: '/research' },
   { label: 'Programs', href: '/programs' },
+  { label: 'People', href: '/people' },
+  { label: 'Partners', href: '/partners' },
   { label: 'Community', href: '/community' },
   { label: 'Explore', href: '/explore' },
   { label: 'News', href: '/news' },

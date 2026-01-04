@@ -9,6 +9,8 @@ import About from "./pages/About";
 import Science from "./pages/Science";
 import Research from "./pages/Research";
 import Programs from "./pages/Programs";
+import People from "./pages/People";
+import Partners from "./pages/Partners";
 import Community from "./pages/Community";
 import Explore from "./pages/Explore";
 import News from "./pages/News";
@@ -31,6 +33,8 @@ const App = () => (
             <Route path="/science/:topic" element={<Science />} />
             <Route path="/research" element={<Research />} />
             <Route path="/programs" element={<Programs />} />
+            <Route path="/people" element={<People />} />
+            <Route path="/partners" element={<Partners />} />
             <Route path="/community" element={<Community />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/news" element={<News />} />
